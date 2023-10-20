@@ -1,6 +1,6 @@
-package digital.metro.pricing.calculator;
+package digital.metro.pricing.calculator.repository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * A dummy implementation for testing purposes. In production, we would get real prices from a database.
  */
-@Component
+@Repository
 public class PriceRepository {
 
     private Map<String, BigDecimal> prices = new HashMap<>();
@@ -29,7 +29,6 @@ public class PriceRepository {
             case "customer-2":
                 return getPriceByArticleId(id1).multiply(new BigDecimal("0.85")).setScale(2, RoundingMode.HALF_UP);
         }
-
         return null;
     }
 }

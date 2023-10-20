@@ -1,5 +1,10 @@
 package digital.metro.pricing.calculator;
 
+import digital.metro.pricing.calculator.dto.BasketCalculationResultDTO;
+import digital.metro.pricing.calculator.model.Basket;
+import digital.metro.pricing.calculator.model.BasketEntry;
+import digital.metro.pricing.calculator.repository.PriceRepository;
+import digital.metro.pricing.calculator.service.BasketCalculatorService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +37,7 @@ public class BasketCalculatorServiceTest {
         Mockito.when(mockPriceRepository.getPriceByArticleId(articleId)).thenReturn(price);
 
         // WHEN
-        BigDecimal result = service.calculateArticle(new BasketEntry(articleId, BigDecimal.ONE), null);
+        BigDecimal result = service.calculateEntryTotal(new BasketEntry(articleId, BigDecimal.ONE), null);
 
         // THEN
         Assertions.assertThat(result).isEqualByComparingTo(price);
@@ -47,7 +52,7 @@ public class BasketCalculatorServiceTest {
         Mockito.when(mockPriceRepository.getPriceByArticleId(articleId)).thenReturn(price);
 
         // WHEN
-        BigDecimal result = service.calculateArticle(new BasketEntry(articleId, quantity), null);
+        BigDecimal result = service.calculateEntryTotal(new BasketEntry(articleId, quantity), null);
 
         // THEN
         Assertions.assertThat(result).isEqualByComparingTo(price.multiply(quantity));
@@ -65,7 +70,7 @@ public class BasketCalculatorServiceTest {
         Mockito.when(mockPriceRepository.getPriceByArticleIdAndCustomerId(articleId, customerId)).thenReturn(customerPrice);
 
         // WHEN
-        BigDecimal result = service.calculateArticle(new BasketEntry(articleId, BigDecimal.ONE), "customer-1");
+        BigDecimal result = service.calculateEntryTotal(new BasketEntry(articleId, BigDecimal.ONE), "customer-1");
 
         // THEN
         Assertions.assertThat(result).isEqualByComparingTo(customerPrice);
@@ -89,11 +94,11 @@ public class BasketCalculatorServiceTest {
         Mockito.when(mockPriceRepository.getPriceByArticleId("article-3")).thenReturn(prices.get("article-3"));
 
         // WHEN
-        BasketCalculationResult result = service.calculateBasket(basket);
+        BasketCalculationResultDTO result = service.calculateBasketTotal(basket);
 
         // THEN
         Assertions.assertThat(result.getCustomerId()).isEqualTo("customer-1");
-        Assertions.assertThat(result.getPricedBasketEntries()).isEqualTo(prices);
+        Assertions.assertThat(result.getPricedEntries()).isEqualTo(prices);
         Assertions.assertThat(result.getTotalAmount()).isEqualByComparingTo(new BigDecimal("11.78"));
     }
 }

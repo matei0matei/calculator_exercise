@@ -1,35 +1,37 @@
-package digital.metro.pricing.calculator;
+package digital.metro.pricing.calculator.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import digital.metro.pricing.calculator.model.Basket;
+import digital.metro.pricing.calculator.dto.BasketCalculationResultDTO;
+import digital.metro.pricing.calculator.model.BasketEntry;
+import digital.metro.pricing.calculator.repository.PriceRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class BasketCalculatorService {
 
-    private PriceRepository priceRepository;
+    private final PriceRepository priceRepository;
 
-    @Autowired
     public BasketCalculatorService(PriceRepository priceRepository) {
         this.priceRepository = priceRepository;
     }
 
-    public BasketCalculationResult calculateBasket(Basket basket) {
+    public BasketCalculationResultDTO calculateBasketTotal(Basket basket) {
         Map<String, BigDecimal> pricedArticles = basket.getEntries().stream()
                 .collect(Collectors.toMap(
                         BasketEntry::getArticleId,
-                        entry -> calculateArticle(entry, basket.getCustomerId())));
+                        entry -> calculateEntryTotal(entry, basket.getCustomerId())));
 
         BigDecimal totalAmount = pricedArticles.values().stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return new BasketCalculationResult(basket.getCustomerId(), pricedArticles, totalAmount);
+        return new BasketCalculationResultDTO(basket.getCustomerId(), pricedArticles, totalAmount);
     }
 
-    public BigDecimal calculateArticle(BasketEntry entry, String customerId) {
+    public BigDecimal calculateEntryTotal(BasketEntry entry, String customerId) {
         String articleId = entry.getArticleId();
         BigDecimal quantity = entry.getQuantity();
 

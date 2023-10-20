@@ -1,10 +1,10 @@
 package digital.metro.pricing.calculator;
 
-import digital.metro.pricing.calculator.dto.BasketCalculationResultDTO;
+import digital.metro.pricing.calculator.dto.BasketTotalsDTO;
 import digital.metro.pricing.calculator.model.Basket;
 import digital.metro.pricing.calculator.model.BasketEntry;
 import digital.metro.pricing.calculator.repository.PriceRepository;
-import digital.metro.pricing.calculator.service.BasketCalculatorService;
+import digital.metro.pricing.calculator.service.BasketService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,17 +16,17 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-public class BasketCalculatorServiceTest {
+public class BasketServiceTest {
 
     @Mock
     private PriceRepository mockPriceRepository;
 
-    private BasketCalculatorService service;
+    private BasketService service;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
-        service = new BasketCalculatorService(mockPriceRepository);
+        service = new BasketService(mockPriceRepository);
     }
 
     @Test
@@ -94,11 +94,11 @@ public class BasketCalculatorServiceTest {
         Mockito.when(mockPriceRepository.getPriceByArticleId("article-3")).thenReturn(prices.get("article-3"));
 
         // WHEN
-        BasketCalculationResultDTO result = service.calculateBasketTotal(basket);
+        BasketTotalsDTO result = service.calculateTotal(basket);
 
         // THEN
-        Assertions.assertThat(result.getCustomerId()).isEqualTo("customer-1");
-        Assertions.assertThat(result.getPricedEntries()).isEqualTo(prices);
-        Assertions.assertThat(result.getTotalAmount()).isEqualByComparingTo(new BigDecimal("11.78"));
+        Assertions.assertThat(result.customerId()).isEqualTo("customer-1");
+        Assertions.assertThat(result.pricedEntries()).isEqualTo(prices);
+        Assertions.assertThat(result.totalAmount()).isEqualByComparingTo(new BigDecimal("11.78"));
     }
 }

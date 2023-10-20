@@ -24,20 +24,21 @@ public class BasketCalculatorService {
                         entry -> calculateArticle(entry, basket.getCustomerId())));
 
         BigDecimal totalAmount = pricedArticles.values().stream()
-                .reduce(BigDecimal.ONE, (a, b) -> a.add(b));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new BasketCalculationResult(basket.getCustomerId(), pricedArticles, totalAmount);
     }
 
-    public BigDecimal calculateArticle(BasketEntry be, String customerId) {
-        String ArticleId = be.getArticleId();
+    public BigDecimal calculateArticle(BasketEntry entry, String customerId) {
+        String articleId = entry.getArticleId();
+        BigDecimal quantity = entry.getQuantity();
 
         if (customerId != null) {
-            BigDecimal customerPrice = priceRepository.getPriceByArticleIdAndCustomerId(ArticleId, customerId);
+            BigDecimal customerPrice = priceRepository.getPriceByArticleIdAndCustomerId(articleId, customerId);
             if (customerPrice != null) {
-                return customerPrice;
+                return customerPrice.multiply(quantity);
             }
         }
-        return priceRepository.getpricebyarticleId(ArticleId);
+        return priceRepository.getPriceByArticleId(articleId).multiply(quantity);
     }
 }

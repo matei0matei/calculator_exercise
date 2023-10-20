@@ -3,12 +3,13 @@ package digital.metro.pricing.calculator.resource;
 import digital.metro.pricing.calculator.dto.BasketTotalsDTO;
 import digital.metro.pricing.calculator.model.Basket;
 import digital.metro.pricing.calculator.service.BasketService;
-import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/calculator")
+@RequestMapping("/basket")
 public class BasketResource {
 
     private final BasketService basketService;
@@ -17,14 +18,9 @@ public class BasketResource {
         this.basketService = basketService;
     }
 
-    @PostMapping("/basket")
-    public BasketTotalsDTO calculateBasket(@RequestBody Basket basket) {
+    @PostMapping("/total")
+    public BasketTotalsDTO calculateTotal(@RequestBody Basket basket) {
         return basketService.calculateTotal(basket);
     }
 
-    @GetMapping("/article/{articleId}")
-    public BigDecimal getArticlePrice(@PathVariable String articleId,
-                                      @RequestParam(value = "customerId", required = false) String customerId) {
-        return basketService.getArticlePrice(customerId, articleId);
-    }
 }
